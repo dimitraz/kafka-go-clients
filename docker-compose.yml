@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  kafka:
+    image: ches/kafka
+    depends_on:
+      - zookeeper
+    environment:
+      ZOOKEEPER_IP: zookeeper
+    ports:
+      - '9092:9092' 
+    command: kafka-topics.sh --create --topic test-topic --replication-factor 1 --partitions 1 --zookeeper zookeeper:2181
+
+  zookeeper:
+    image: zookeeper:3.4
+    restart: unless-stopped
+    ports:
+      - '2181:2181'
