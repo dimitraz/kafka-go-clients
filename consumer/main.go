@@ -10,8 +10,8 @@ import (
 // Set up the consumer config
 func newConfig() *kafka.ConfigMap {
 	config := &kafka.ConfigMap{
-		"bootstrap.servers": getEnv("BOOTSTRAP_SERVERS", "localhost"),
-		"group.id":          "myGroup",
+		"bootstrap.servers": getEnv("SERVERS", "localhost"),
+		"group.id":          getEnv("GROUP_ID", "consumer-group"),
 		"auto.offset.reset": "earliest",
 	}
 	return config
