@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -9,11 +10,18 @@ import (
 // Set up the consumer config
 func newConfig() *kafka.ConfigMap {
 	config := &kafka.ConfigMap{
-		"bootstrap.servers": "localhost",
+		"bootstrap.servers": getEnv("BOOTSTRAP_SERVERS", "localhost"),
 		"group.id":          "myGroup",
 		"auto.offset.reset": "earliest",
 	}
 	return config
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 
 func main() {
@@ -27,7 +35,7 @@ func main() {
 	}
 
 	// Subscribe to topic and consume messages
-	topic := "myTopic"
+	topic := getEnv("TOPIC", "myTopic")
 	consumer.SubscribeTopics([]string{topic}, nil)
 
 	for {
