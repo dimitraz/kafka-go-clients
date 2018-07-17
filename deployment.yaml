@@ -16,31 +16,27 @@ data:
       "segment.bytes": "1073741824"
     }
 ---
-apiVersion: extensions/v1beta1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   labels:
     app: kafka-producer
   name: kafka-producer
 spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: kafka-producer
-    spec:
-      containers:
-      - name: kafka-producer
-        image: dimitraz/go-producer:latest
-        env:
-          - name: SERVERS
-            value: my-cluster-kafka:9092
-          - name: TOPIC
-            value: test-topic
-          - name: TIMER
-            value: "1000"
-          - name: NUMBER_OF_KEYS
-            value: "3"
+  containers:
+  - name: kafka-producer
+    image: dimitraz/go-producer:latest
+    imagePullPolicy: Always
+    env:
+      - name: SERVERS
+        value: kafka:9092
+      - name: TOPIC
+        value: test-topic
+      - name: TIMER
+        value: "1000"
+      - name: NUMBER_OF_KEYS
+        value: "3"
+  restartPolicy: Never
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -60,7 +56,7 @@ spec:
         image: dimitraz/go-consumer:latest
         env:
           - name: SERVERS
-            value: my-cluster-kafka:9092
+            value: kafka:9092
           - name: TOPIC
             value: test-topic
           - name: GROUP_ID

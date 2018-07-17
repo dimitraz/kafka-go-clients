@@ -10,7 +10,7 @@ import (
 // Set up the producer config
 func newConfig() *kafka.ConfigMap {
 	config := &kafka.ConfigMap{
-		"bootstrap.servers": getEnv("BOOTSTRAP_SERVERS", "localhost"),
+		"bootstrap.servers": getEnv("SERVERS", "localhost"),
 	}
 	return config
 }
@@ -51,7 +51,7 @@ func main() {
 	}()
 
 	// Produce messages to topic (asynchronously)
-	topic := getEnv("TOPIC", "myTopic")
+	topic := getEnv("TOPIC", "test-topic")
 	for _, word := range []string{"what", "three", "words"} {
 		producer.Produce(&kafka.Message{
 			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},

@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// Subscribe to topic and consume messages
-	topic := getEnv("TOPIC", "myTopic")
+	topic := getEnv("TOPIC", "test-topic")
 	consumer.SubscribeTopics([]string{topic}, nil)
 
 	for {
