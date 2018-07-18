@@ -31,7 +31,7 @@ func main() {
 	// Create the consumer
 	consumer, err := kafka.NewConsumer(config)
 	if err != nil {
-		log.Fatal("Could not create producer")
+		log.Fatal("Could not create consumer")
 	}
 
 	// Subscribe to topic and consume messages
