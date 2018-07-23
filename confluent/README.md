@@ -5,36 +5,31 @@ Confluent's Go client for Kafka is dependent on the `librdkafka` library which m
 
 ```sh
 # Start Kafka and Zookeeper
-cd confluent
 docker-compose up 
 
-# Start the producer, which publishes messages
-# to a given topic every 10 seconds
+# Start the producer, which publishes messages to a given topic every 10 seconds
 go run producer/main.go
 
-# Start the consumer
+# Consume the messages
 go run consumer/main.go
 ```
 
 ### Deploying to Kubernetes or Openshift
-The deployment file assumes you're using a Strimzi cluster for Kafka and Zookeeper. 
-First, build and push the consumer image to your Dockerhub: 
+The `deployment.yaml` file in this repo assumes you're using a [Strimzi](http://strimzi.io/) cluster for Kafka and Zookeeper. 
 
 ```sh
+# Build and push the consumer image to your Dockerhub
 export DOCKER_ORG=<your-dockerhub-username>
-cd confluent/consumer
+
+cd consumer
+make docker_release
+
+# Build and push the producer image
+cd ../producer
 make docker_release
 ```
 
-Build and push the producer image:
-
-```sh
-export DOCKER_ORG=<your-dockerhub-username>
-cd confluent/producer
-make docker_release
-```
-
-Update `deployment.yaml` with your dockerhub username, and create the Deployments:
+Update `deployment.yaml` with your dockerhub username, and create the `Deployment`s:
 
 ```sh
 # Deploy to an Openshift cluster
