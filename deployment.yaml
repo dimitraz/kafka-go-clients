@@ -16,27 +16,31 @@ data:
       "segment.bytes": "1073741824"
     }
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
   labels:
     app: kafka-producer
   name: kafka-producer
 spec:
-  containers:
-  - name: kafka-producer
-    image: dimitraz/go-producer:latest
-    imagePullPolicy: Always
-    env:
-      - name: SERVERS
-        value: kafka:9092
-      - name: TOPIC
-        value: test-topic
-      - name: TIMER
-        value: "1000"
-      - name: NUMBER_OF_KEYS
-        value: "3"
-  restartPolicy: Never
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kafka-producer
+    spec:
+      containers:
+      - name: kafka-producer
+        image: dimitraz/go-producer:latest
+        env:
+          - name: SERVERS
+            value: kafka:9092
+          - name: TOPIC
+            value: test-topic
+          - name: TIMER
+            value: "1000"
+          - name: NUMBER_OF_KEYS
+            value: "3"
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment

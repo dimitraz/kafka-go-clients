@@ -12,7 +12,7 @@ func newConfig() *kafka.ConfigMap {
 	config := &kafka.ConfigMap{
 		"bootstrap.servers": getEnv("SERVERS", "localhost"),
 		"group.id":          getEnv("GROUP_ID", "consumer-group"),
-		"auto.offset.reset": "earliest",
+		"auto.offset.reset": "latest",
 	}
 	return config
 }

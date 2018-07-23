@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -52,13 +54,12 @@ func main() {
 
 	// Produce messages to topic (asynchronously)
 	topic := getEnv("TOPIC", "test-topic")
-	for _, word := range []string{"what", "three", "words"} {
-		producer.Produce(&kafka.Message{
+	for {
+		msg := &kafka.Message{
 			TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
-			Value:          []byte(word),
-		}, nil)
+			Value:          []byte(fmt.Sprintf("Something Cool on %s", time.Now().Format("Mon Jan 2 15:04:05"))),
+		}
+		producer.Produce(msg, nil)
+		time.Sleep(10 * time.Second)
 	}
-
-	// Wait for message deliveries
-	producer.Flush(15 * 1000)
 }
