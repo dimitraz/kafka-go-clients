@@ -2,5 +2,6 @@ consumer-bin
 producer-bin
 
 sarama-producer
+sarama-consumer
 
 notes
