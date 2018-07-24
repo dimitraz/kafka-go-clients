@@ -3,13 +3,16 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
 
 	kafka "github.com/Shopify/sarama"
+	cluster "github.com/bsm/sarama-cluster"
 )
 
 // Set up the consumer config
-func newConfig() *kafka.Config {
-	config := kafka.NewConfig()
+func newConfig() *cluster.Config {
+	config := cluster.NewConfig()
+	config.Group.Return.Notifications = true
 	config.Consumer.Return.Errors = true
 	config.Consumer.Offsets.Initial = kafka.OffsetNewest
 
@@ -26,41 +29,46 @@ func getEnv(key, fallback string) string {
 func main() {
 	// Configure the consumer
 	config := newConfig()
+	groupId := getEnv("GROUP_ID", "kafka-consumer")
+	topics := []string{getEnv("TOPIC", "test-topic")}
 	brokers := []string{getEnv("SERVERS", "localhost:9092")}
 
 	// Create the consumer
-	consumer, err := kafka.NewConsumer(brokers, config)
+	consumer, err := cluster.NewConsumer(brokers, groupId, topics, config)
 	if err != nil {
 		log.Fatalf("Could not create consumer: %v\n", err)
 	}
 
 	defer consumer.Close()
 
-	// Subscribe to topic and consume messages
-	topic := getEnv("TOPIC", "test-topic")
-	partitionList, err := consumer.Partitions(topic)
-	if err != nil {
-		log.Fatalf("Error getting partition list: %v\n", err)
-	}
+	// trap SIGINT to trigger a shutdown.
+	signals := make(chan os.Signal, 1)
+	signal.Notify(signals, os.Interrupt)
 
-	// Consume from every partition in the partition list
-	for _, partition := range partitionList {
-		pc, err := consumer.ConsumePartition(topic, partition, kafka.OffsetOldest)
-		if err != nil {
-			log.Fatalf("Could not create partition consumer: %v\n", err)
+	// consume errors
+	go func() {
+		for err := range consumer.Errors() {
+			log.Fatalf("Error: %v\n", err.Error())
 		}
+	}()
 
-		go func(pc kafka.PartitionConsumer) {
-			for {
-				select {
-				case err := <-pc.Errors():
-					log.Fatalf("Partition consumer error: %v\n", err)
-				}
+	// consume notifications
+	go func() {
+		for ntf := range consumer.Notifications() {
+			log.Printf("Rebalanced: %+v\n", ntf)
+		}
+	}()
+
+	// consume messages, watch signals
+	for {
+		select {
+		case msg, ok := <-consumer.Messages():
+			if ok {
+				log.Printf("Message on topic: %s, partition: %v, offset: %v: %s\n", msg.Topic, msg.Partition, msg.Offset, msg.Value)
+				consumer.MarkOffset(msg, "") // mark message as processed
 			}
-		}(pc)
-
-		for msg := range pc.Messages() {
-			log.Printf("Message on topic: %s, partition: %v, offset: %v: %s\n", msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
+		case <-signals:
+			return
 		}
 	}
 }
