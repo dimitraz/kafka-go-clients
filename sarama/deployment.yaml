@@ -34,7 +34,7 @@ spec:
         image: dimitraz/sarama-producer:latest
         env:
           - name: SERVERS
-            value: my-cluster-kafka:9092
+            value: my-cluster-kafka-bootstrap:9092
           - name: TOPIC
             value: test-topic
           - name: TIMER
@@ -60,7 +60,7 @@ spec:
         image: dimitraz/sarama-consumer:latest
         env:
           - name: SERVERS
-            value: my-cluster-kafka:9092
+            value: my-cluster-kafka-bootstrap:9092
           - name: TOPIC
             value: test-topic
           - name: GROUP_ID

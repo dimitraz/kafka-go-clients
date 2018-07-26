@@ -16,6 +16,8 @@ go run consumer/main.go
 ### Deploying to Kubernetes or Openshift
 The `deployment.yaml` file in this repo assumes you're using a [Strimzi](http://strimzi.io/) cluster for Kafka and Zookeeper. 
 
+**Note**: If your Kafka cluster's name is not `my-cluster-kafka`, you need to update the `SERVER` env vars in the deployment with the actual cluster name.
+
 ```sh
 # Build and push the consumer image to your Dockerhub
 export DOCKER_ORG=<your-dockerhub-username>
