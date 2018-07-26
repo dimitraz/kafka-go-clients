@@ -33,8 +33,8 @@ Update `deployment.yaml` with your dockerhub username, and create the `Deploymen
 
 ```sh
 # Deploy to an Openshift cluster
-oc create -f confluent/deployment.yaml
+oc create -f deployment.yaml
 
 # Deploy to a k8s cluster
-kubectl create -f confluent/deployment.yaml
+kubectl create -f deployment.yaml
 ```
