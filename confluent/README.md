@@ -1,6 +1,4 @@
-# Kafka Go Client examples
-
-## Confluent Go
+# Confluent Go client
 Confluent's Go client for Kafka is dependent on the `librdkafka` library which must be installed first to run the examples locally. See instructions [here](https://github.com/confluentinc/confluent-kafka-go#installing-librdkafka). 
 
 ```sh

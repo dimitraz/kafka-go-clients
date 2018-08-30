@@ -1,6 +1,4 @@
-# Kafka Go Client examples
-
-## Sarama
+# Sarama Go client
 [Sarama](https://github.com/Shopify/sarama) is Shopify's Go client for Kafka and is the most widely adopted. Sarama does not have consumer group support so the [Sarama Cluster](https://github.com/bsm/sarama-cluster) extension was used for this.
 
 ```sh
